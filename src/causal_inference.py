@@ -12,6 +12,8 @@ import pandas as pd
 
 from dowhy import CausalModel
 
+from data_generate import gen_data
+
 # DATA VALIDATION
 def validate_data(df):
 
@@ -61,7 +63,7 @@ def identify_estimate(model):
     method_name="backdoor.linear_regression"
     )
 
-    return estimate
+    return identified_estimand, estimate
 
 # REFUTATION TESTS
 def run_refutations(
@@ -101,4 +103,39 @@ def run_refutations(
         results["random_common_cause"] = str(e)
 
     return results
+
+def run_causal_analysis(df: pd.DataFrame | None = None) -> dict:
+
+    if df is None:
+        df = gen_data()
+
+    validate_data(df)
+
+    print("Building causal model...")
+    model = build_causal_model(df)
+
+    print("Identifying and estimating causal effect...")
+    estimand, estimate = identify_estimate(model)
+
+    print(f"\nEstimated ATE of price on demand: {estimate.value:.4f}")
+    print("(Interpretation: a $1 increase in price changes demand by this amount)\n")
+
+    print("Running refutation tests...")
+    refutations = run_refutations(model, estimand, estimate)
+
+    for name, result in refutations.items():
+        print(f"\n[{name}]")
+        print(result)
+
+    return {
+        "model": model,
+        "estimand": estimand,
+        "estimate": estimate,
+        "refutations": refutations,
+    }
+
+
+if __name__ == "__main__":
+    run_causal_analysis()
+
 
