@@ -282,11 +282,8 @@ Optimal Price:
 ---
 
 ## 📉 Revenue Learning Curve
-
-```markdown
-![Learning Curve](outputs/learning_curve.png)
-```
-
+---
+<img src="outputs/revenue.png" width="500">
 ---
 
 ## 📚 Methodology
